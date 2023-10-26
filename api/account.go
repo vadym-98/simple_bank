@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/gin-gonic/gin"
 	db "github.com/vadym-98/simple_bank/db/sqlc"
 	"net/http"
@@ -105,6 +106,11 @@ func (s *Server) updateAccount(c *gin.Context) {
 	arg := db.UpdateAccountParams{ID: param.ID, Balance: req.Balance}
 	account, err := s.store.UpdateAccount(c, arg)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
