@@ -5,26 +5,26 @@ import (
 	"github.com/vadym-98/simple_bank/util"
 )
 
-type entryBuilder struct {
+type EntryBuilder struct {
 	entry db.Entry
 }
 
-func (eb *entryBuilder) WithAccountID(id int64) *entryBuilder {
+func (eb *EntryBuilder) WithAccountID(id int64) *EntryBuilder {
 	eb.entry.AccountID = id
 	return eb
 }
 
-func (eb *entryBuilder) WithAmount(amount int64) *entryBuilder {
+func (eb *EntryBuilder) WithAmount(amount int64) *EntryBuilder {
 	eb.entry.Amount = amount
 	return eb
 }
 
-func (eb *entryBuilder) Get() db.Entry {
+func (eb *EntryBuilder) Get() db.Entry {
 	return eb.entry
 }
 
-func NewEntry() *entryBuilder {
-	return &entryBuilder{
+func NewEntry() *EntryBuilder {
+	return &EntryBuilder{
 		entry: db.Entry{
 			ID:        util.RandomInt(1, 1000),
 			AccountID: util.RandomInt(1, 1000),

@@ -5,26 +5,26 @@ import (
 	"github.com/vadym-98/simple_bank/util"
 )
 
-type accountBuilder struct {
+type AccountBuilder struct {
 	account db.Account
 }
 
-func (ab *accountBuilder) WithBalance(b int64) *accountBuilder {
+func (ab *AccountBuilder) WithBalance(b int64) *AccountBuilder {
 	ab.account.Balance = b
 	return ab
 }
 
-func (ab *accountBuilder) WithCurrency(c string) *accountBuilder {
+func (ab *AccountBuilder) WithCurrency(c string) *AccountBuilder {
 	ab.account.Currency = c
 	return ab
 }
 
-func (ab *accountBuilder) Get() db.Account {
+func (ab *AccountBuilder) Get() db.Account {
 	return ab.account
 }
 
-func NewAccount() *accountBuilder {
-	return &accountBuilder{
+func NewAccount() *AccountBuilder {
+	return &AccountBuilder{
 		account: db.Account{
 			ID:       util.RandomInt(1, 1000),
 			Owner:    util.RandomOwner(),

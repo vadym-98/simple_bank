@@ -5,26 +5,26 @@ import (
 	"github.com/vadym-98/simple_bank/util"
 )
 
-type transferBuilder struct {
+type TransferBuilder struct {
 	transfer db.Transfer
 }
 
-func (tb *transferBuilder) WithFromAccountID(id int64) *transferBuilder {
+func (tb *TransferBuilder) WithFromAccountID(id int64) *TransferBuilder {
 	tb.transfer.FromAccountID = id
 	return tb
 }
 
-func (tb *transferBuilder) WithToAccountID(id int64) *transferBuilder {
+func (tb *TransferBuilder) WithToAccountID(id int64) *TransferBuilder {
 	tb.transfer.ToAccountID = id
 	return tb
 }
 
-func (tb *transferBuilder) Get() db.Transfer {
+func (tb *TransferBuilder) Get() db.Transfer {
 	return tb.transfer
 }
 
-func NewTransfer() *transferBuilder {
-	return &transferBuilder{
+func NewTransfer() *TransferBuilder {
+	return &TransferBuilder{
 		transfer: db.Transfer{
 			ID:            util.RandomInt(1, 1000),
 			FromAccountID: util.RandomInt(1, 1000),
