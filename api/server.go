@@ -1,22 +1,35 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	db "github.com/vadym-98/simple_bank/db/sqlc"
+	"github.com/vadym-98/simple_bank/token"
+	"github.com/vadym-98/simple_bank/util"
 	"log"
 )
 
 // Server serves HTTP requests for banking service
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	config     util.Config
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
-	router := gin.Default()
+func NewServer(cfg util.Config, store db.Store) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(cfg.TokenSymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	}
+
+	server := &Server{
+		config:     cfg,
+		store:      store,
+		tokenMaker: tokenMaker,
+	}
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		err := v.RegisterValidation("currency", validCurrency)
@@ -25,19 +38,26 @@ func NewServer(store db.Store) *Server {
 		}
 	}
 
-	router.POST("/users", server.createUser)
+	server.setupRouter()
 
-	router.POST("/accounts", server.createAccount)
-	router.GET("/accounts/:id", server.getAccount)
-	router.GET("/accounts", server.listAccount)
-	router.PUT("/accounts/:id", server.updateAccount)
-	router.DELETE("/accounts/:id", server.deleteAccount)
+	return server, nil
+}
 
-	router.POST("/transfers", server.createTransfer)
+func (s *Server) setupRouter() {
+	router := gin.Default()
 
-	server.router = router
+	router.POST("/users", s.createUser)
+	router.POST("/users/login", s.loginUser)
 
-	return server
+	router.POST("/accounts", s.createAccount)
+	router.GET("/accounts/:id", s.getAccount)
+	router.GET("/accounts", s.listAccount)
+	router.PUT("/accounts/:id", s.updateAccount)
+	router.DELETE("/accounts/:id", s.deleteAccount)
+
+	router.POST("/transfers", s.createTransfer)
+
+	s.router = router
 }
 
 func (s *Server) Start(address string) error {

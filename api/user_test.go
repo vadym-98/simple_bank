@@ -58,7 +58,7 @@ func TestCreateUserAPI(t *testing.T) {
 		FullName: u.FullName,
 		Email:    u.Email,
 	}
-	uResp := createUserResponse{
+	uResp := userResponse{
 		Username: u.Username,
 		FullName: u.FullName,
 		Email:    u.Email,
@@ -81,7 +81,7 @@ func TestCreateUserAPI(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchStruct[createUserResponse](t, recorder.Body, uResp)
+				requireBodyMatchStruct[userResponse](t, recorder.Body, uResp)
 			},
 		},
 		{
@@ -171,7 +171,7 @@ func TestCreateUserAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			req, err := http.NewRequest(http.MethodPost, "/users", createBody(t, tc.body))
