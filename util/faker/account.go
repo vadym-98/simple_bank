@@ -9,6 +9,11 @@ type AccountBuilder struct {
 	account db.Account
 }
 
+func (ab *AccountBuilder) WithOwner(owner string) *AccountBuilder {
+	ab.account.Owner = owner
+	return ab
+}
+
 func (ab *AccountBuilder) WithBalance(b int64) *AccountBuilder {
 	ab.account.Balance = b
 	return ab
